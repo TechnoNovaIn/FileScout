@@ -1,0 +1,15 @@
+[Unit]
+Description=FileScout Universal File Search API
+After=network.target
+
+[Service]
+Type=simple
+User=admins
+WorkingDirectory=/home/admins/Filescout/python
+ExecStart=/home/admins/.local/share/mamba/envs/filescout/bin/uvicorn search_api:app --host 127.0.0.1 --port 8005 --app-dir /home/admins/Filescout/python
+Restart=always
+RestartSec=3
+Environment=PATH=/home/admins/.local/share/mamba/envs/filescout/bin:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target

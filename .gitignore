@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+python/.venv
+venv/
+.venv/
+
+# Build output
+build/
+dist/
+python/build/
+python/dist/
+*.spec
+search.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Runtime data / databases
+python/index.db
+python/index.db-shm
+python/index.db-wal
+data/
+*.log
+
+# Environment / secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.mimocode/

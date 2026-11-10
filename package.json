@@ -1,0 +1,60 @@
+{
+  "name": "filescout",
+  "version": "1.0.0",
+  "description": "Universal keyword search for PDFs and images",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  },
+  "scripts": {
+    "dev": "concurrently \"cross-env BROWSER=none react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
+    "react:build": "react-scripts build",
+    "build:python": "pyinstaller --onefile --workpath python/build --distpath python/dist --name search python/search.py",
+    "pack:win": "npm run react:build && electron-builder --win",
+    "pack:mac": "npm run react:build && electron-builder --mac"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.filescout.app",
+    "productName": "FileScout",
+    "extends": null,
+    "directories": { "output": "dist" },
+    "files": [
+      "build/**/*",
+      "electron/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "python/dist/", "to": "python/", "filter": ["**/*"] }
+    ],
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }],
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "include": "scripts/installer.nsh"
+    },
+    "dmg": { "title": "FileScout Installer" }
+  }
+}

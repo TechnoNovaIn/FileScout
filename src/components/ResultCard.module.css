@@ -1,0 +1,168 @@
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.card:hover { border-color: #3a3a50; }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.header:hover { background: var(--bg3); }
+
+.fileIcon {
+  font-size: 18px;
+  color: var(--accent);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.fileInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filePath {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.methodTag {
+  font-size: 9px;
+  padding: 1px 5px;
+  background: rgba(64, 192, 128, 0.12);
+  color: var(--success);
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.langTag {
+  font-size: 9px;
+  padding: 1px 5px;
+  background: rgba(240, 192, 64, 0.12);
+  color: var(--accent);
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.confBadge {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  min-width: 36px;
+  text-align: center;
+}
+
+.matchBadge {
+  flex-shrink: 0;
+  background: rgba(240, 192, 64, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(240, 192, 64, 0.3);
+  border-radius: 12px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-head);
+}
+
+.openBtn {
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.openBtn:hover { color: var(--accent); }
+
+.chevron {
+  color: var(--muted);
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+/* ── Snippets ── */
+.snippets {
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.snippet {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 14px;
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+
+.snippet:hover { background: var(--bg3); }
+
+.snippetNum {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--muted);
+  width: 16px;
+  text-align: right;
+}
+
+.snippetText {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.context {
+  color: var(--muted);
+}
+
+.highlight {
+  background: rgba(240, 192, 64, 0.25);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 600;
+}

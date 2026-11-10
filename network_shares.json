@@ -1,0 +1,9 @@
+[
+  {
+    "id": "share-users",
+    "name": "Host Users Share",
+    "unc_path": "\\\\192.168.0.116\\Users",
+    "display": "\\\\192.168.0.116\\Users",
+    "description": "Shared Users folder on FileScout Host"
+  }
+]

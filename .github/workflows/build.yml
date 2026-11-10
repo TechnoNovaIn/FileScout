@@ -1,0 +1,165 @@
+name: Build FileScout
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+
+  # ── Build Windows .exe ────────────────────────────────────────────────────────
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Tesseract OCR (Windows)
+        run: |
+          choco install tesseract --yes
+          echo "C:\Program Files\Tesseract-OCR" >> $env:GITHUB_PATH
+        shell: pwsh
+
+      - name: Install Python dependencies
+        run: pip install -r python/requirements.txt
+        timeout-minutes: 30
+
+      - name: Build Python binary (Windows)
+        run: pyinstaller --onefile --workpath python/build --distpath python/dist --name search python/search.py
+        timeout-minutes: 60
+        continue-on-error: false
+
+      - name: Install Node dependencies
+        run: npm ci
+        timeout-minutes: 30
+
+      - name: Verify Python binary exists
+        run: dir python\dist\
+        shell: pwsh
+
+      - name: Build React (Windows)
+        run: npx react-scripts build
+        timeout-minutes: 10
+
+      - name: Build Electron installer (Windows)
+        run: npx electron-builder --win --publish=never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        timeout-minutes: 120
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileScout-Windows
+          path: dist/*.exe
+          retention-days: 30
+
+  # ── Build macOS .dmg ──────────────────────────────────────────────────────────
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Tesseract OCR (macOS)
+        run: brew install tesseract
+
+      - name: Install Python dependencies
+        run: pip install -r python/requirements.txt
+        timeout-minutes: 30
+
+      - name: Build Python binary (macOS)
+        run: pyinstaller --onefile --workpath python/build --distpath python/dist --name search python/search.py
+        timeout-minutes: 60
+        continue-on-error: false
+
+      - name: Install Node dependencies
+        run: npm ci
+        timeout-minutes: 30
+
+      - name: Verify Python binary exists
+        run: ls -la python/dist/
+
+      - name: Build React (macOS)
+        run: npx react-scripts build
+        timeout-minutes: 10
+
+      - name: Build Electron installer (macOS)
+        run: npx electron-builder --mac --publish=never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        timeout-minutes: 120
+
+      - name: Upload macOS DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileScout-macOS
+          path: dist/*.dmg
+          retention-days: 30
+
+  # ── Create GitHub Release with both installers ────────────────────────────────
+  release:
+    needs: [build-windows, build-mac]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: FileScout-Windows
+          path: artifacts/windows
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: FileScout-macOS
+          path: artifacts/mac
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "FileScout ${{ github.ref_name }}"
+          body: |
+            ## FileScout ${{ github.ref_name }}
+
+            ### Downloads
+            - **Windows**: `FileScout-Setup.exe` — double-click to install, adds right-click menu automatically
+            - **macOS**: `FileScout.dmg` — drag to Applications, then run `bash /Applications/FileScout.app/Contents/Resources/scripts/mac-register-service.sh` once
+
+            ### What's New
+            - Fixed Windows JSON parse error (stderr leaking into stdout)
+            - Added folder pre-indexing for instant keyword search
+            - Incremental re-indexing (only processes new/changed files)
+          files: |
+            artifacts/windows/*.exe
+            artifacts/mac/*.dmg
+          draft: false
+          prerelease: false
